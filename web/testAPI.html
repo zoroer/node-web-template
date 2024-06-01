@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test API Page</title>
+  <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+</head>
+<body>
+
+<div id="app">
+  <section class="login-form">
+    <section class="form-item">
+      <span class="label">用户名：</span>
+      <input class="username" type="text" v-model="formValue.username" />
+    </section>
+    <section class="form-item">
+      <span class="label">密 码：</span>
+      <input class="password" type="password" v-model="formValue.password" />
+    </section>
+    <button class="login-btn" @click="handleLogin">登 录</button>
+    <button class="login-btn" @click="handleLogout">退出登录</button>
+  </section>
+
+  <hr />
+
+  <section class="api-result-box">
+    <section class="form-item">
+      <button class="login-btn" @click="handleApiRequest">点击调用接口</button>
+      <section>
+        <span class="label">登录/非登录，调用auth接口api结果：</span>
+        <span class="api-result">{{apiRes}}</span>
+      </section>
+    </section>
+  </section>
+</div>
+
+<script type="text/javascript">
+  const { createApp, ref, reactive } = Vue
+
+  createApp({
+    setup() {
+      const formValue = reactive({
+        username: '',
+        password: ''
+      })
+      const apiRes = ref('')
+
+      // 处理登录
+      const handleLogin = async () => {
+        if (!formValue.username || !formValue.password) {
+          alert('用户名/密码不能为空！')
+          return false
+        }
+        const md5Password = await CryptoJS.MD5(formValue.password).toString(CryptoJS.enc.Hex)
+        axios.post('http://localhost:3000/noauth/login', {
+          username: formValue.username,
+          password: md5Password
+        })
+          .then(function (res) {
+            alert(JSON.stringify(res.data.data))
+          })
+          .catch(function (err) {
+            console.log(err);
+          })
+      }
+      // 处理注销
+      const handleLogout = () => {
+        axios.post('http://localhost:3000/auth/logout')
+          .then(function (res) {
+            console.log(res.data.data.username)
+            alert('注销成功')
+          })
+          .catch(function (err) {
+            console.log(err);
+          })
+      }
+      // auth/noauth接口测试
+      const handleApiRequest = () => {
+        axios.get('http://localhost:3000/test/getQueryName?name=111')
+          .then(function (res) {
+            apiRes.value = res.data.data.name
+          })
+          .catch(function (err) {
+            console.log(err);
+          })
+      }
+      return {
+        formValue,
+        apiRes,
+        handleLogin,
+        handleLogout,
+        handleApiRequest
+      }
+    }
+  }).mount('#app')
+</script>
+</body>
+</html>
