@@ -13,7 +13,6 @@ class LoginService {
     const selectUser = await UserModal.findOne({ username })
     if (selectUser === null) {
       await this.createUser(username, password)
-      jwtToken = await _common.createJWTToken(username)
     } else {
       // 账号，密码有误
       if (password !== selectUser.password) {
@@ -24,9 +23,31 @@ class LoginService {
         return
       }
     }
+    // 颁发新的token
+    // todo 需要接入redis优化多个有效token的问题。
+    jwtToken = await _common.createJWTToken(username)
+
     ctx.json({
       data: {
+        username,
         token: jwtToken
+      }
+    })
+  }
+
+  /**
+   * 处理注销
+   * todo 需要接入redis让已经颁发的token失效。
+   * @param ctx
+   * @returns {Promise<void>}
+   */
+  async logout(ctx) {
+    const { username } = ctx.request.body
+    ctx.jwtToken = null
+
+    ctx.json({
+      data: {
+        username
       }
     })
   }

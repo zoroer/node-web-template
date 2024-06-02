@@ -1,4 +1,3 @@
-const { sessionConf } = require('../../conf/index')
 
 // 处理请求跨域
 const handleCros = async (ctx, next) => {
@@ -19,7 +18,7 @@ const handleCros = async (ctx, next) => {
 
 // jwt token验证并拦截校验
 const handleSession = async (ctx, next) => {
-  const { path } = ctx.req
+  const { url } = ctx.req
   const { authorization } = ctx.headers
   const jwtToken = authorization?.split(' ')[1] || null
   let verifiedJWTToken = false //jwtToken验证结果
@@ -32,7 +31,7 @@ const handleSession = async (ctx, next) => {
 
   // 验证auth接口的jwt token有效性，无效直接拦截并返回
   if (
-    path.includes('/auth/') &&
+    url.includes('/auth/') &&
     (jwtToken === null || !verifiedJWTToken)
   ) {
     ctx.json({
@@ -43,10 +42,10 @@ const handleSession = async (ctx, next) => {
   }
 
   // API格式未区分auth时，打印warning日志
-  if (!/(\/auth\/)|(\/noauth\/)/.test(path)) {
-    _common.AppLogger.warn('[BAD_API_FORMAT]', Error(path))
+  if (!/(\/auth\/)|(\/noauth\/)/.test(url)) {
+    _common.AppLogger.warn('[BAD_API_FORMAT]', Error(url))
   }
-  next()
+  await next()
 }
 
 module.exports  = { handleCros, handleSession }

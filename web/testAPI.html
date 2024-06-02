@@ -59,7 +59,12 @@
           password: md5Password
         })
           .then(function (res) {
-            alert(JSON.stringify(res.data.data))
+            const { data } = res.data
+            if (data.token) {
+              localStorage.setItem('web_jwt_token', data.token)
+            }
+            localStorage.setItem('web_username', data.username)
+            alert(data.username + '登录成功！')
           })
           .catch(function (err) {
             console.log(err);
@@ -67,10 +72,23 @@
       }
       // 处理注销
       const handleLogout = () => {
-        axios.post('http://localhost:3000/auth/logout')
+        axios.post('http://localhost:3000/auth/logout', {
+          username: localStorage.getItem('web_username')
+        }, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('web_jwt_token')
+          }
+        })
           .then(function (res) {
-            console.log(res.data.data.username)
-            alert('注销成功')
+            const { data, code } = res.data
+            localStorage.removeItem('web_jwt_token')
+            localStorage.removeItem('web_username')
+
+            if (code === 10002) {
+              alert('token无效，请登录！')
+              return
+            }
+            alert(data.username + ' 注销成功!')
           })
           .catch(function (err) {
             console.log(err);
@@ -86,6 +104,7 @@
             console.log(err);
           })
       }
+
       return {
         formValue,
         apiRes,

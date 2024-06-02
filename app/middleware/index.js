@@ -5,7 +5,7 @@ const { handleReqLog, handleResponse } = require('./resFilter')
 module.exports = {
   handleCros,
   bodyParser: bodyParser(),
-  // handleSession,
   handleReqLog,
-  handleResponse
+  handleResponse,
+  handleSession
 }

@@ -44,7 +44,7 @@ function validate (rule={}, req) {
 async function createJWTToken (username) {
   const token = await jsonwebtoken.sign({
     data: { username }
-  }, jwtConf.secret, ...jwtConf.extraConf)
+  }, jwtConf.secret, jwtConf.extraConf)
   return token || null
 }
 
@@ -56,14 +56,14 @@ async function createJWTToken (username) {
 async function validateJWTToken (token) {
   try {
     const jwtVerifyRes = await jsonwebtoken.verify(token, jwtConf.secret)
-    console.log('=>(index.js:59) jwtVerifyRes', jwtVerifyRes)
     if (jwtVerifyRes.err) {
       _common.AppLogger.warn('[JWT Token 验证失败]', jwtVerifyRes.err)
       return false
     }
     return true
   } catch (err) {
-    throw new Error(err)
+    _common.AppLogger.warn('[JWT Token 验证失败]', err)
+    return false
   }
 }
 

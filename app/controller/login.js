@@ -22,6 +22,23 @@ class LoginController {
     }
     await LoginService.login(ctx)
   }
+
+  // 注销
+  async logout (ctx) {
+    try {
+      _common.validate({
+        username: 'string'
+      }, ctx)
+    } catch (err) {
+      ctx.json({
+        code: 10001,
+        msg: '[Request Params Error]',
+        errLog: err,
+      })
+      return false
+    }
+    await LoginService.logout(ctx)
+  }
 }
 
 module.exports = new LoginController()
