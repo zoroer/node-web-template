@@ -11,15 +11,19 @@
 
 <div id="app">
   <section class="login-form">
-    <section class="form-item">
-      <span class="label">用户名：</span>
-      <input class="username" type="text" v-model="formValue.username" />
+    <section class="has-login" v-if="!loginUsername">
+      <section class="form-item">
+        <span class="label">用户名：</span>
+        <input class="username" type="text" v-model="formValue.username" />
+      </section>
+      <section class="form-item">
+        <span class="label">密 码：</span>
+        <input class="password" type="password" v-model="formValue.password" />
+      </section>
     </section>
-    <section class="form-item">
-      <span class="label">密 码：</span>
-      <input class="password" type="password" v-model="formValue.password" />
-    </section>
-    <button class="login-btn" @click="handleLogin">登 录</button>
+    <section v-else>当前已登录用户：{{ loginUsername }}</section>
+
+    <button class="login-btn" @click="handleLogin" v-if="!loginUsername">登 录</button>
     <button class="login-btn" @click="handleLogout">退出登录</button>
   </section>
 
@@ -27,17 +31,18 @@
 
   <section class="api-result-box">
     <section class="form-item">
-      <button class="login-btn" @click="handleApiRequest">点击调用接口</button>
+      <button class="login-btn" @click="handleApiRequest($event, 'userInfo')">点击当前用户信息</button>
+      <button class="login-btn" @click="handleApiRequest($event, 'userList')">点击获取所有注册的用户列表</button>
       <section>
-        <span class="label">登录/非登录，调用auth接口api结果：</span>
-        <span class="api-result">{{apiRes}}</span>
+        <span class="label">登录/非登录，调用接口api结果：</span>
+        <p class="api-result">{{apiRes}}</p>
       </section>
     </section>
   </section>
 </div>
 
 <script type="text/javascript">
-  const { createApp, ref, reactive } = Vue
+  const { createApp, ref, reactive, computed } = Vue
 
   createApp({
     setup() {
@@ -46,6 +51,9 @@
         password: ''
       })
       const apiRes = ref('')
+      const loginUsername = computed(() => {
+        return localStorage.getItem('web_username') || ''
+      })
 
       // 处理登录
       const handleLogin = async () => {
@@ -59,17 +67,23 @@
           password: md5Password
         })
           .then(function (res) {
-            const { data } = res.data
+            const { data, code, msg } = res.data
+            if (code !== 1) {
+              alert(msg)
+              return
+            }
             if (data.token) {
               localStorage.setItem('web_jwt_token', data.token)
             }
             localStorage.setItem('web_username', data.username)
             alert(data.username + '登录成功！')
+            location.reload()
           })
           .catch(function (err) {
             console.log(err);
           })
       }
+
       // 处理注销
       const handleLogout = () => {
         axios.post('http://localhost:3000/auth/logout', {
@@ -80,25 +94,43 @@
           }
         })
           .then(function (res) {
-            const { data, code } = res.data
-            localStorage.removeItem('web_jwt_token')
-            localStorage.removeItem('web_username')
-
-            if (code === 10002) {
-              alert('token无效，请登录！')
+            const { data, code, msg } = res.data
+            if (code !== 1) {
+              alert(msg)
               return
             }
+            localStorage.removeItem('web_jwt_token')
+            localStorage.removeItem('web_username')
             alert(data.username + ' 注销成功!')
+            location.reload()
           })
           .catch(function (err) {
             console.log(err);
           })
       }
-      // auth/noauth接口测试
-      const handleApiRequest = () => {
-        axios.get('http://localhost:3000/test/getQueryName?name=111')
+
+      /**
+       * auth/noauth 接口测试
+       * @param event
+       * @param apiType
+       */
+      const handleApiRequest = (event, apiType) => {
+        const apiMap = {
+          'userInfo': 'http://localhost:3000/auth/getUserInfo',
+          'userList': 'http://localhost:3000/auth/getUserList'
+        }
+        axios.post(apiMap[apiType], {}, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('web_jwt_token')
+          }
+        })
           .then(function (res) {
-            apiRes.value = res.data.data.name
+            const { data, code, msg } = res.data
+            if (code !== 1) {
+              alert(msg)
+              return
+            }
+            apiRes.value = data
           })
           .catch(function (err) {
             console.log(err);
@@ -106,6 +138,7 @@
       }
 
       return {
+        loginUsername,
         formValue,
         apiRes,
         handleLogin,

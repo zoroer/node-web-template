@@ -36,6 +36,7 @@ const handleSession = async (ctx, next) => {
   ) {
     ctx.json({
       code: 10002,
+      data: null,
       msg: '[Illegal Token]'
     })
     return

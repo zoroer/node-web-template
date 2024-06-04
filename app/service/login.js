@@ -1,4 +1,5 @@
 const UserModal = require('../model/user')
+const UserService = require('../service/user')
 
 class LoginService {
   /**
@@ -12,13 +13,14 @@ class LoginService {
 
     const selectUser = await UserModal.findOne({ username })
     if (selectUser === null) {
-      await this.createUser(username, password)
+      await UserService.handleCreateUser(username, password)
     } else {
       // 账号，密码有误
       if (password !== selectUser.password) {
         ctx.json({
           code: 20001,
-          data: '用户名/密码错误，请重试！'
+          data: null,
+          msg: '用户名/密码错误，请重试！'
         })
         return
       }
@@ -42,7 +44,7 @@ class LoginService {
    * @returns {Promise<void>}
    */
   async logout(ctx) {
-    const { username } = ctx.request.body
+    const {username} = ctx.request.body
     ctx.jwtToken = null
 
     ctx.json({
@@ -50,23 +52,6 @@ class LoginService {
         username
       }
     })
-  }
-
-  /**
-   * 创建user
-   * @param username
-   * @param password
-   * @returns {Promise<{password: (*|void), username}>}
-   */
-  async createUser (username, password) {
-    try {
-      return await UserModal.create({
-        username,
-        password
-      })
-    } catch (err) {
-      throw new Error(err)
-    }
   }
 }
 

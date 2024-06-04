@@ -60,7 +60,8 @@ async function validateJWTToken (token) {
       _common.AppLogger.warn('[JWT Token 验证失败]', jwtVerifyRes.err)
       return false
     }
-    return true
+    // jwtVerifyRes结构: { data: { username: 'test' }, iat: 1717486944, exp: 1717490544 }
+    return jwtVerifyRes
   } catch (err) {
     _common.AppLogger.warn('[JWT Token 验证失败]', err)
     return false

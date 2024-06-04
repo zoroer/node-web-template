@@ -3,7 +3,7 @@ const CommonConf = {}
 CommonConf.jwtConf = {
   secret: '__node_web__',
   extraConf: {
-    expiresIn: 20
+    expiresIn: '1h'
   }
 }
 

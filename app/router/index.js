@@ -4,6 +4,7 @@ const router = new Router()
 
 const testRouter  = require('./test')
 const loginRouter  = require('./login')
+const userRouter  = require('./user')
 
 // 默认访问
 router.get('/', (ctx, next) => {
@@ -14,5 +15,6 @@ router.get('/', (ctx, next) => {
 
 router.use(testRouter.routes())
 router.use(loginRouter.routes())
+router.use(userRouter.routes())
 
 module.exports = router
