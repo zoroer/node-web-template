@@ -9,6 +9,8 @@ const Middleware = require('./app/middleware')
 
 // 加载数据库配置
 require('./mongoDB/index')
+// 加载redis配置
+require('./redis/index')
 
 // 加载中间件
 Object.values(Middleware).map(middleware => {

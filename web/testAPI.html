@@ -72,9 +72,8 @@
               alert(msg)
               return
             }
-            if (data.token) {
-              localStorage.setItem('web_jwt_token', data.token)
-            }
+
+            localStorage.setItem('web_jwt_token', data.token)
             localStorage.setItem('web_username', data.username)
             alert(data.username + '登录成功！')
             location.reload()
@@ -86,9 +85,7 @@
 
       // 处理注销
       const handleLogout = () => {
-        axios.post('http://localhost:3000/auth/logout', {
-          username: localStorage.getItem('web_username')
-        }, {
+        axios.post('http://localhost:3000/auth/logout', {}, {
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('web_jwt_token')
           }
@@ -97,11 +94,17 @@
             const { data, code, msg } = res.data
             if (code !== 1) {
               alert(msg)
+              if (code === 10002) {
+                localStorage.removeItem('web_jwt_token')
+                localStorage.removeItem('web_username')
+                location.reload()
+              }
               return
             }
+
+            alert(' 注销成功!')
             localStorage.removeItem('web_jwt_token')
             localStorage.removeItem('web_username')
-            alert(data.username + ' 注销成功!')
             location.reload()
           })
           .catch(function (err) {
@@ -128,6 +131,11 @@
             const { data, code, msg } = res.data
             if (code !== 1) {
               alert(msg)
+              if (code === 10002) {
+                localStorage.removeItem('web_jwt_token')
+                localStorage.removeItem('web_username')
+                location.reload()
+              }
               return
             }
             apiRes.value = data

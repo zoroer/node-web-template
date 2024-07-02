@@ -1,9 +1,12 @@
 const CommonConf = {}
 
+// jwt token 和 redis中 u_id 的有效期
+CommonConf.commonTokenExpress = 24 * 60 * 60 // 单位s
+
 CommonConf.jwtConf = {
   secret: '__node_web__',
   extraConf: {
-    expiresIn: '1h'
+    expiresIn: CommonConf.commonTokenExpress
   }
 }
 
@@ -14,6 +17,12 @@ CommonConf.mongoose = {
     useUnifiedTopology: true,
     useFindAndModify: false,
   }
+}
+
+// redis配置
+CommonConf.redis = {
+  host: '127.0.0.1',
+  port: '6379'
 }
 
 // logger配置

@@ -1,7 +1,8 @@
 const UserModal = require('../model/user')
 const UserService = require('../service/user')
+const LoginBase = require('./base')
 
-class LoginService {
+class LoginService extends LoginBase {
   /**
    * 处理登录
    * @param ctx
@@ -11,9 +12,13 @@ class LoginService {
     const { username, password } = ctx.request.body
     let jwtToken = null
 
+    // 查询当前用户名对应用户是否存在
     const selectUser = await UserModal.findOne({ username })
     if (selectUser === null) {
       await UserService.handleCreateUser(username, password)
+      // 颁发新的token
+      jwtToken = await _common.createJWTToken(username)
+      await this.setUserTokenToRedis(jwtToken, 'valid')
     } else {
       // 账号，密码有误
       if (password !== selectUser.password) {
@@ -24,10 +29,18 @@ class LoginService {
         })
         return
       }
+
+      const validToken = await this.getUserTokenFromRedis(ctx.jwtToken)
+      // 查询缓存中用户之前颁布的token是否失效。
+      // 失效重新颁布，没失效返回缓存的token。
+      if (!validToken) {
+        // 颁发新的token
+        jwtToken = await _common.createJWTToken(username)
+        await this.setUserTokenToRedis(jwtToken, 'valid')
+      } else {
+        jwtToken = validToken
+      }
     }
-    // 颁发新的token
-    // todo 需要接入redis优化多个有效token的问题。
-    jwtToken = await _common.createJWTToken(username)
 
     ctx.json({
       data: {
@@ -38,19 +51,15 @@ class LoginService {
   }
 
   /**
-   * 处理注销
-   * todo 需要接入redis让已经颁发的token失效。
+   * 处理注销，并失效redis缓存值
    * @param ctx
    * @returns {Promise<void>}
    */
   async logout(ctx) {
-    const {username} = ctx.request.body
+    await this.delUserRedisToken(ctx.jwtToken)
     ctx.jwtToken = null
-
     ctx.json({
-      data: {
-        username
-      }
+      data: null
     })
   }
 }

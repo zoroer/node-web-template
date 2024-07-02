@@ -1,15 +1,9 @@
-2024-06-04 13:40:17; ERROR: [BAD_REQUEST] 
-2024-06-04 13:41:57; ERROR: [BAD_REQUEST] 
-2024-06-04 13:42:44; ERROR: 用户名/密码错误，请重试！ 
-2024-06-04 13:43:46; ERROR: [Illegal Token] 
-2024-06-04 15:42:02; ERROR: [Illegal Token] 
-2024-06-04 16:22:16; ERROR: [Illegal Token] 
-2024-06-04 16:22:22; ERROR: [Illegal Token] 
-2024-06-04 16:35:45; ERROR: [Illegal Token] 
-2024-06-04 16:35:47; ERROR: [Illegal Token] 
-2024-06-04 16:44:12; ERROR: [Illegal Token] 
-2024-06-04 17:33:08; ERROR: [Illegal Token] 
-2024-06-04 17:33:10; ERROR: [Illegal Token] 
-2024-06-04 17:36:47; ERROR: [Illegal Token] 
-2024-06-04 17:36:49; ERROR: [Illegal Token] 
-2024-06-04 17:36:52; ERROR: [Illegal Token] 
+2024-07-02 09:57:04; INFO: [redis] redis is ready
+2024-07-02 10:01:34; INFO: [redis] redis is ready
+2024-07-02 10:02:30; INFO: [redis] redis is ready
+2024-07-02 10:02:58; INFO: [redis] redis is ready
+2024-07-02 10:03:04; INFO: [redis] redis is ready
+2024-07-02 10:03:54; INFO: [redis] redis is ready
+2024-07-02 10:06:48; INFO: [redis] redis is ready
+2024-07-02 10:06:56; INFO: [redis] redis is ready
+2024-07-02 10:09:28; INFO: [redis] redis is ready

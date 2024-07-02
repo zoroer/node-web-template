@@ -7,7 +7,7 @@ const handleCros = async (ctx, next) => {
 	ctx.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
 	ctx.set("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
   ctx.set("Access-Control-Allow-Credentials", true);
-	ctx.set("X-Powered-By", 'Express');
+	ctx.set("X-Powered-By", 'Koa2');
 
 	if (ctx.method === 'OPTIONS') {
   	ctx.body = 200
